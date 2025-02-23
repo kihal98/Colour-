@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 // Keep Alive System
 const keepAlive = require("./keep_alive.js");
 keepAlive();
@@ -16,12 +18,6 @@ app.listen(3000, () => {
 
 // Discord Bot Setup
 const { Client, Intents } = require("discord.js");
-const {
-  token,
-  serverID,
-  roleID,
-  interval,
-} = require("./config.json");
 
 const bot = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS],
@@ -30,19 +26,19 @@ const bot = new Client({
 bot.on("ready", async () => {
   console.log(`[ Client ] ${bot.user.tag} Is Now Online`);
 
-  let guild = bot.guilds.cache.get(serverID);
-  if (!guild) throw `[ Error ] Didn't Find Any Server: ${serverID}`;
+  let guild = bot.guilds.cache.get(process.env.SERVER_ID);
+  if (!guild) throw `[ Error ] Didn't Find Any Server: ${process.env.SERVER_ID}`;
 
-  let role = guild.roles.cache.find((r) => r.id === roleID);
+  let role = guild.roles.cache.find((r) => r.id === process.env.ROLE_ID);
   if (!role) throw `[ Error ] Didn't Find Any Role in ${guild.name}`;
 
-  if (interval < 6000) console.log("!!! Enjoy Your Rainbow Roles");
+  if (process.env.INTERVAL < 6000) console.log("!!! Enjoy Your Rainbow Roles");
 
   setInterval(() => {
     role
       .edit({ color: Math.floor(Math.random() * 16777215) })
       .catch((err) => console.log(`[ Error ] An error occurred during the role change:`, err));
-  }, parseInt(interval));
+  }, parseInt(process.env.INTERVAL));
 
   bot.user.setPresence({
     status: "dnd",
@@ -53,4 +49,4 @@ bot.on("ready", async () => {
   });
 });
 
-bot.login(token);
+bot.login(process.env.BOT_TOKEN);
